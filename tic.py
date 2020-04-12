@@ -1,10 +1,7 @@
-##Select Game Mode :
-##    1. Single Player (v/s Computer)
-##    2. Multi Player (v/s Player)
-
 EMPTY = " "
 X = "X"
 O = "O"
+mode=None
 
 def dis_instruct():
     """Display Game Instructions"""
@@ -23,13 +20,25 @@ def dis_instruct():
             6 | 7 | 8
 
     So Let's Begin.
-""")
+
+
+    Please Select Mode:
+    1. Single Player V/S Computer
+    2. Player V/S Player
+
+    Please Enter Your Choice : """)
+    global mode
+    mode=int(input())
 
 def assign_symbol():
     """Assign Symbols to Player"""
     sym= None
     while sym not in ("O","X"):
-        print("Please Select Your Symbol (O/X)")
+        if mode == 1:
+            print("Please Select Your Symbol (O/X)")
+        else :
+            print("Player 1 Select Your Symbol.")
+            print("Player 2 Gets The Other One.")
         print("(Remember Always X Goes First!!)")
         sym = input("Symbol : ").upper()
     if sym == X:
@@ -54,7 +63,6 @@ def move_hum(board):
     for x in range(9):
         if board[x] == EMPTY:
             allowed_moves.append(x)
-    print(allowed_moves)
     move = None
     while move not in allowed_moves:
         move = int(input("Enter Your Move : "))
@@ -73,14 +81,16 @@ def move_com(board,com,hum):
             allowed_moves.append(x)
     for move in allowed_moves:
         b[move] = com
-        if check_win(board) == com:
+        if check_win(b) == com:
             return move
         b[move]=EMPTY
+
     for move in allowed_moves:
         b[move] = hum
-        if check_win(board) == hum:
-            return mov
+        if check_win(b) == hum:
+            return move
         b[move]=EMPTY
+
     for move in BESTM:
         if move in allowed_moves:
             return move
@@ -102,11 +112,12 @@ def check_win(board):
             return board[x[0]]
     if EMPTY not in board:
         return "TIE"
+
     return None
 
 ## main
 dis_instruct()
-hum, com = assign_symbol()
+player1, player2 = assign_symbol()
 turn = X
 board=[]
 for x in range(9):
@@ -114,20 +125,28 @@ for x in range(9):
 dis_board(board)
 winner = None
 while not winner:
-    if turn == hum:
+    if turn == player1:
         move = move_hum(board)
-        board[move] = hum
+        board[move] = player1
     else:
-        move = move_com(board,com,hum)
-        board[move] = com
+        if mode == 1:    
+            move = move_com(board,player2,player1)
+            board[move] = player2
+        else:
+            move = move_hum(board)
+            board[move] = player2
     dis_board(board)
     turn = switch_turn(turn)
     winner = check_win(board)
-if winner == hum:
-    print("Congratulations You Won!!")
-elif winner == com:
-    print("Sorry, You Lost!!")
+if winner == player1:
+    if mode ==1:
+        print("Congratulations You Won!!")
+    else:
+        print("Congratulations, Player 1 Won!!")
+elif winner == player2:
+    if mode==1:
+        print("Sorry, You Lost!!")
+    else:
+        print("Congratulations, Player 2 Won!!")
 else:
     print("It Is A Tie!!")
-    
-
